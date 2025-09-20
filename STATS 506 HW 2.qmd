@@ -5,23 +5,45 @@ format: pdf
 editor: visual
 ---
 
-## Quarto
+# STATS 506 HW 2
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+## Problem 1 - Modified Random Walk
 
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+### a) (with loop)
 
 ```{r}
-1 + 1
+#' Random walk with loops. 50% chance of moving +-1, if +1 is chosen then a 5% chance of moving +10 rather than just +1, if -1 is chosen then a 20% chance of moving -3 rather than just -1.
+#' @param count how many steps the random walk will take
+#' @returns the final value once the steps are completed
+random_walk1 <- function(count){
+  walk <- 0
+  for(i in 1:count){
+    #take the initial sample for the +-1
+    sample_1 <- sample(c(-1, 1), 1)
+    #conditions for the extra possible +10 or -3 move
+    if(sample_1 == 1){
+      sample_2 <- sample(c(1, 10), 1, prob = c(0.95, 0.05))
+      walk <- walk + sample_2
+    }
+    else{
+      sample_3 <- sample(c(-1, -3), 1, prob = c(0.8, 0.2))
+      walk <- walk + sample_3
+    }
+  }
+  return(walk)
+}
 ```
 
-You can add options to executable code like this
+### a) (vectorized)
+
+```{r}
+
+```
+
 
 ```{r}
 #| echo: false
 2 * 2
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+
