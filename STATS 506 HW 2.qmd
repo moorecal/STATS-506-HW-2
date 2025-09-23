@@ -55,7 +55,8 @@ random_walk1 <- function(count, override = FALSE, test_vec){
 ### a) (vectorized)
 
 ```{r}
-#' Random walk vectorized. Same task as above, but vectorized rather than with loops. Does all steps and once and sums them.
+#' Random walk vectorized. Same task as above, but vectorized rather than with loops. 
+#' Does all steps and once and sums them.
 #' @param count how many steps the random walk will take
 #' @returns the final value once the steps are completed
 random_walk2 <- function(count, override = FALSE, test_vec){
@@ -64,7 +65,10 @@ random_walk2 <- function(count, override = FALSE, test_vec){
   #Replace needs to be true now since we aren't looping over the function each 
   #time anymore and need to be sampling from each of the 4 possibilities this time.
   if(override == FALSE){
-    all_steps <- sample(c(-1, 1, -3, 10), size = count, replace = TRUE, prob = c(4/10, 19/40, 1/10, 1/40))
+    all_steps <- sample(c(-1, 1, -3, 10), 
+                        size = count, 
+                        replace = TRUE, 
+                        prob = c(4/10, 19/40, 1/10, 1/40))
     
     walk <- sum(all_steps)
   }
@@ -84,7 +88,12 @@ random_walk2 <- function(count, override = FALSE, test_vec){
 random_walk3 <- function(count, override = FALSE, test_vec){
   if(override == FALSE){
     steps_mat <- as.matrix(c(-1, 1, -3, 10))
-    all_steps <- apply(steps_mat, 2, sample, size = count, replace = TRUE, prob = c(4/10, 19/40, 1/10, 1/40))
+    all_steps <- apply(steps_mat, 
+                       2, 
+                       sample, 
+                       size = count, 
+                       replace = TRUE, 
+                       prob = c(4/10, 19/40, 1/10, 1/40))
     
     walk <- sum(all_steps)
   }
@@ -110,8 +119,14 @@ random_walk3(1000)
 
 ```{r}
 set.seed(123)
-test_10 <- sample(c(-1, 1, -3, 10), size = 10, replace = TRUE, prob = c(4/10, 19/40, 1/10, 1/40))
-test_1000 <- sample(c(-1, 1, -3, 10), size = 1000, replace = TRUE, prob = c(4/10, 19/40, 1/10, 1/40))
+test_10 <- sample(c(-1, 1, -3, 10), 
+                  size = 10, 
+                  replace = TRUE, 
+                  prob = c(4/10, 19/40, 1/10, 1/40))
+test_1000 <- sample(c(-1, 1, -3, 10), 
+                    size = 1000, 
+                    replace = TRUE, 
+                    prob = c(4/10, 19/40, 1/10, 1/40))
 random_walk1(10, override = TRUE, test_10)
 random_walk2(10, override = TRUE, test_10)
 random_walk3(10, override = TRUE, test_10)
@@ -216,7 +231,8 @@ All but favorite_count seem suitable to use. Favorite_count is all 0s except for
 ```{r}
 youtube$log_view_count <- log(youtube$view_count)
 youtube$log_like_count <- log(youtube$like_count + 1) #The +1 for these three 
-#variables is because they have entries of 0, which will cause problems when we make the log transformation
+#variables is because they have entries of 0, which will cause problems when we make 
+#the log transformation
 youtube$log_dislike_count <- log(youtube$dislike_count + 1)
 youtube$log_comment_count <- log(youtube$comment_count + 1)
 ```
@@ -224,13 +240,17 @@ youtube$log_comment_count <- log(youtube$comment_count + 1)
 ### c)
 
 ```{r}
-lm_view <- lm(log_view_count ~ funny + show_product_quickly + patriotic + celebrity + danger + animals + use_sex + year, data = youtube)
+lm_view <- lm(log_view_count ~ funny + show_product_quickly + patriotic + 
+                celebrity + danger + animals + use_sex + year, data = youtube)
 
-lm_like <- lm(log_like_count ~ funny + show_product_quickly + patriotic + celebrity + danger + animals + use_sex + year, data = youtube)
+lm_like <- lm(log_like_count ~ funny + show_product_quickly + patriotic + 
+                celebrity + danger + animals + use_sex + year, data = youtube)
 
-lm_dislike <- lm(log_dislike_count ~ funny + show_product_quickly + patriotic + celebrity + danger + animals + use_sex + year, data = youtube)
+lm_dislike <- lm(log_dislike_count ~ funny + show_product_quickly + patriotic + 
+                   celebrity + danger + animals + use_sex + year, data = youtube)
 
-lm_comment <- lm(log_comment_count ~ funny + show_product_quickly + patriotic + celebrity + danger + animals + use_sex + year, data = youtube)
+lm_comment <- lm(log_comment_count ~ funny + show_product_quickly + patriotic + 
+                   celebrity + danger + animals + use_sex + year, data = youtube)
 
 summary(lm_view)
 summary(lm_like)
