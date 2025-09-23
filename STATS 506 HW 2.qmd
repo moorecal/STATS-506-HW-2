@@ -12,7 +12,9 @@ editor: visual
 ### a) (with loop)
 
 ```{r}
-#' Random walk with loops. 50% chance of moving +-1, if +1 is chosen then a 5% chance of moving +10 rather than just +1, if -1 is chosen then a 20% chance of moving -3 rather than just -1.
+#' Random walk with loops. 50% chance of moving +-1, if +1 is chosen then a 5% 
+#' chance of moving +10 rather than just +1, if -1 is chosen then a 20% chance of 
+#' moving -3 rather than just -1.
 #' @param count how many steps the random walk will take
 #' @param override user can set to TRUE to provide a custom set of steps for testing
 #' @param test_vec user can provide the vector that will be used to ensure it provides a certain value
@@ -57,7 +59,10 @@ random_walk1 <- function(count, override = FALSE, test_vec){
 #' @param count how many steps the random walk will take
 #' @returns the final value once the steps are completed
 random_walk2 <- function(count, override = FALSE, test_vec){
-  #we can do all the steps at once, add them up, and add the total to walk. Need to include all possible outcomes and their respective probabilities. Replace needs to be true now since we aren't looping over the function each time anymore and need to be sampling from each of the 4 possibilities this time.
+  #we can do all the steps at once, add them up, and add the total to walk. 
+  #Need to include all possible outcomes and their respective probabilities. 
+  #Replace needs to be true now since we aren't looping over the function each 
+  #time anymore and need to be sampling from each of the 4 possibilities this time.
   if(override == FALSE){
     all_steps <- sample(c(-1, 1, -3, 10), size = count, replace = TRUE, prob = c(4/10, 19/40, 1/10, 1/40))
     
@@ -165,13 +170,93 @@ intersection <- function(n){
   from_12_to_7 <- rpois(n, 1)
   from_9_to_4 <- rpois(n, 8)
   from_6_to_11 <- rpois(n, 12)
-  rush_hour <- rnorm(2*n, 60, 12) #2*n since the rush hour occurs twice
+  rush_hour1 <- rnorm(n, 60, 12)
+  rush_hour2 <- rnorm(n, 60, 12)
   
-  car_count <- from_12_to_7 + from_9_to_4 + from_6_to_11 + rush_hour
+  car_count <- from_12_to_7 + from_9_to_4 + from_6_to_11 + rush_hour1 + rush_hour2
   return(mean(car_count))
 }
 ```
 
 ## Problem 3 - Linear Regression
+
+### a)
+
+```{r}
+youtube <- read.csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-02/youtube.csv')
+
+youtube <- youtube[ , !(names(youtube) %in% c( "brand", 
+                                              "superbowl_ads_dot_com_url", 
+                                              "youtube_url",
+                                              "id",
+                                              "etag",
+                                              "published_at",
+                                              "title",
+                                              "description",
+                                              "thumbnail",
+                                              "channel_title"))]
+
+dim(youtube)
+```
+
+### b)
+
+```{r}
+#Check distributions of each variable
+
+hist(subset(youtube, view_count < 200000)$view_count)
+hist(subset(youtube, like_count < 1000)$like_count)
+hist(subset(youtube, dislike_count < 100)$dislike_count)
+hist(youtube$favorite_count)
+hist(subset(youtube, comment_count < 100)$comment_count)
+```
+
+All but favorite_count seem suitable to use. Favorite_count is all 0s except for 16 NAs. The rest of the variables are suitable to use, but I will apply a log transformation to them so that they are more normally distributed.
+
+```{r}
+youtube$log_view_count <- log(youtube$view_count)
+youtube$log_like_count <- log(youtube$like_count + 1) #The +1 for these three 
+#variables is because they have entries of 0, which will cause problems when we make the log transformation
+youtube$log_dislike_count <- log(youtube$dislike_count + 1)
+youtube$log_comment_count <- log(youtube$comment_count + 1)
+```
+
+### c)
+
+```{r}
+lm_view <- lm(log_view_count ~ funny + show_product_quickly + patriotic + celebrity + danger + animals + use_sex + year, data = youtube)
+
+lm_like <- lm(log_like_count ~ funny + show_product_quickly + patriotic + celebrity + danger + animals + use_sex + year, data = youtube)
+
+lm_dislike <- lm(log_dislike_count ~ funny + show_product_quickly + patriotic + celebrity + danger + animals + use_sex + year, data = youtube)
+
+lm_comment <- lm(log_comment_count ~ funny + show_product_quickly + patriotic + celebrity + danger + animals + use_sex + year, data = youtube)
+
+summary(lm_view)
+summary(lm_like)
+summary(lm_dislike)
+summary(lm_comment)
+```
+
+In general, some patterns emerge. Use of animals and sex in the ads seem to be negatively associated with all four of our outcomes of views, likes, dislikes, and comments. It would seem that there is possibly just an association of lower interaction in general with ads that make use of animals and sex. Using a 95% confidence interval, there is only one significant variable, which is year in the function to predict the dislike count. The coefficient is positive, suggesting that there is an associated increase in the log dislike count of 0.09207 for each increase in the year (i.e. when an ad is newer).
+
+### d)
+
+```{r}
+# Remove NAs and create design matrix
+view_matrix <- na.omit(model.matrix(lm_view, data = youtube))
+# Remove NAs and create the outcome vector
+view_outcomes <- na.omit(matrix(youtube$log_view_count, nrow = length(youtube$log_view_count)))
+# Use formula for beta hat
+
+beta_hat <- solve(t(view_matrix)%*%view_matrix)%*%t(view_matrix)%*%view_outcomes
+
+beta_hat
+
+summary(lm_view)
+```
+
+The coefficients appear to match.
+
 
 
