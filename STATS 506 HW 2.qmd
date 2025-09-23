@@ -160,7 +160,18 @@ According to the Monte Carlo simulations, ~13% of random walks with 10 steps end
 
 ## Problem 2 - Mean of Mixture of Distributions
 
+```{r}
+intersection <- function(n){
+  from_12_to_7 <- rpois(n, 1)
+  from_9_to_4 <- rpois(n, 8)
+  from_6_to_11 <- rpois(n, 12)
+  rush_hour <- rnorm(2*n, 60, 12) #2*n since the rush hour occurs twice
+  
+  car_count <- from_12_to_7 + from_9_to_4 + from_6_to_11 + rush_hour
+  return(mean(car_count))
+}
+```
 
-
+## Problem 3 - Linear Regression
 
 
